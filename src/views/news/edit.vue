@@ -615,7 +615,7 @@
           >Xác nhận</el-button
         > -->
         <el-button
-          v-if="pdfList.length > 0"
+          v-if="edit.flag_pdf && edit.flag_pdf.length > 0"
           type="danger"
           icon="el-icon-view"
           @click="pdfDialogVisible = true"
@@ -643,18 +643,16 @@
     >
       <div>
         <div style="font-weight: bold; margin-bottom: 10px">Link</div>
-        <div v-if="pdfList.length === 0" style="color: #909399">
-          Chưa có file PDF
-        </div>
-        <div v-else>
+
+        <div v-if="edit.flag_pdf && !!edit.flag_pdf.length">
           <div
-            v-for="(pdf, idx) in pdfList"
+            v-for="(pdf, idx) in edit.flag_pdf"
             :key="idx"
             class="box"
             style="margin-bottom: 8px"
           >
             <a
-              :href="pdf.url"
+              :href="pdf.link"
               target="_blank"
               rel="noopener"
               style="color: #409eff; text-decoration: underline"
@@ -662,6 +660,9 @@
               {{ pdf.file_name }}
             </a>
           </div>
+        </div>
+           <div v-else style="color: #909399">
+          Chưa có file PDF
         </div>
       </div>
       <span slot="footer">
@@ -793,25 +794,6 @@ export default {
       const approved = Number(this.edit && this.edit.approved)
       return approved === 3 || approved === 4
     },
-    pdfList() {
-      const files = this.edit && this.edit.flag_pdf
-      if (!Array.isArray(files) || files.length === 0) return []
-      const dateStr =
-        this.edit.updated_at && this.edit.updated_at.date
-          ? this.edit.updated_at.date
-          : null
-      if (!dateStr) return []
-      const d = new Date(dateStr.replace(' ', 'T'))
-      if (isNaN(d.getTime())) return []
-      const year = d.getFullYear()
-      const month = d.getMonth() + 1
-      const day = d.getDate()
-      const base = `https://cdn88.stdmcl.com/${year}/${month}/${day}`
-      return files.map((item) => ({
-        file_name: item.file_name,
-        url: `${base}/${item.file_name}`
-      }))
-    }
   },
   created() {
     this.role.products = []

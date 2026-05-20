@@ -180,14 +180,14 @@
           <span
             v-if="
               scope.row.flag_index &&
-                scope.row.flag_index.is_send_payment_success == 0
+                scope.row.flag_index.is_send_api == 0
             "
             style="color: red"
           >Chưa gửi thành công</span>
           <span
             v-else-if="
               scope.row.flag_index &&
-                scope.row.flag_index.is_send_payment_success == 1
+                scope.row.flag_index.is_send_api == 1
             "
             style="color: rgb(3, 169, 244)"
           >Gửi thành công</span>

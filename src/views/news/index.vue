@@ -18,7 +18,11 @@
         <el-input v-model="id_payment" placeholder="Id đối tác" />
       </el-col>
       <el-col :xs="12" :lg="4">
-        <el-input v-model="id_app" placeholder="Id-app" />
+        <el-input
+          v-model="id_app"
+          placeholder="Id-app"
+          @input="(v) => (id_app = (v || '').toLowerCase())"
+        />
       </el-col>
       <el-col :xs="12" :lg="4">
         <el-input v-model="shd" placeholder="Shd" />
@@ -78,13 +82,15 @@
           placeholder="Chọn chi nhánh"
           filterable
           clearable
+          :filter-method="filterSite"
           style="width: 100%"
+          @visible-change="handleSiteVisible"
         >
           <el-option
-            v-for="item in sites"
+            v-for="item in filteredSites"
             :key="item.sapCode"
             :value="item.sapCode"
-            :label="item.name"
+            :label="`${item.sapCode} - ${item.name}`"
           />
         </el-select>
       </el-col>
@@ -127,6 +133,7 @@
       <el-table-column label="Chi nhánh">
         <template slot-scope="scope">
           <span v-if="sites.find((a) => a.sapCode == scope.row.cid_store)">
+            {{ scope.row.cid_store }} -
             {{ sites.find((a) => a.sapCode == scope.row.cid_store).name }}
           </span>
         </template>
@@ -284,12 +291,22 @@ export default {
       edit: null,
 
       sites: [],
+      siteKeyword: '',
       loading: false,
       loadingPayments: false,
       loadingStores: false
     }
   },
   computed: {
+    filteredSites() {
+      const kw = (this.siteKeyword || '').trim().toLowerCase()
+      if (!kw) return this.sites
+      return this.sites.filter((s) => {
+        const name = (s.name || '').toLowerCase()
+        const code = String(s.sapCode || '').toLowerCase()
+        return name.includes(kw) || code.includes(kw)
+      })
+    },
     news() {
       const n = this.$store.state.new.news
       if (!n || Array.isArray(n)) {
@@ -321,6 +338,12 @@ export default {
     }
   },
   methods: {
+    filterSite(query) {
+      this.siteKeyword = query
+    },
+    handleSiteVisible(visible) {
+      if (!visible) this.siteKeyword = ''
+    },
     formatDate(d) {
       return d ? d.toLocaleString('sv-SE').split(' ')[0] : ''
     },
@@ -330,7 +353,7 @@ export default {
         name: this.name,
         phone: this.phone,
         id_payment: this.id_payment,
-        id_app: this.id_app,
+        id_app: (this.id_app || '').trim().toLowerCase(),
         shd: this.shd,
         cid_type_payment: this.cid_type_payment,
         cid_store: this.cid_store,

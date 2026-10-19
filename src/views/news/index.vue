@@ -96,6 +96,9 @@
           </el-select>
         </el-col>
         <el-col :xs="12" :lg="4">
+          <el-input v-model="orderCode" placeholder="Mã đơn hàng (orderCode)" />
+        </el-col>
+        <el-col :xs="12" :lg="4">
           <el-button
             type="primary"
             icon="el-icon-search"
@@ -114,6 +117,11 @@
         <el-table-column label="ID app" min-width="290" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row.id_app }}
+          </template>
+        </el-table-column>
+        <el-table-column label="Mã đơn hàng" min-width="140" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row.orderCode }}
           </template>
         </el-table-column>
         <el-table-column label="Tên" min-width="150" show-overflow-tooltip>
@@ -280,6 +288,8 @@ export default {
 
       shd: '',
 
+      orderCode: '',
+
       cid_type_payment: '',
 
       cid_store: '',
@@ -361,6 +371,7 @@ export default {
         id_payment: this.id_payment,
         id_app: (this.id_app || '').trim().toLowerCase(),
         shd: this.shd,
+        orderCode: (this.orderCode || '').trim(),
         cid_type_payment: this.cid_type_payment,
         cid_store: this.cid_store,
         approved: this.approved,

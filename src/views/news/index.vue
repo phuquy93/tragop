@@ -1,223 +1,237 @@
 <template>
   <div v-loading="loading" class="app-container">
-    <el-button
-      v-if="news != null"
-      type="primary"
-      icon="el-icon-plus"
-      @click="handleAddRole(true)"
-    >Thêm mới</el-button>
+    <div class="filter-card">
+      <el-button
+        v-if="news != null"
+        type="primary"
+        icon="el-icon-plus"
+        @click="handleAddRole(true)"
+      >Thêm mới</el-button>
 
-    <el-row :gutter="10" style="margin-top: 30px">
-      <el-col :xs="12" :lg="4">
-        <el-input v-model="name" placeholder="Nhập tên user" />
-      </el-col>
-      <el-col :xs="12" :lg="4">
-        <el-input v-model="phone" placeholder="Số điện thoại" />
-      </el-col>
-      <el-col :xs="12" :lg="4">
-        <el-input v-model="id_payment" placeholder="Id đối tác" />
-      </el-col>
-      <el-col :xs="12" :lg="4">
-        <el-input
-          v-model="id_app"
-          placeholder="Id-app"
-          @input="(v) => (id_app = (v || '').toLowerCase())"
-        />
-      </el-col>
-      <el-col :xs="12" :lg="4">
-        <el-input v-model="shd" placeholder="Shd" />
-      </el-col>
-      <el-col :xs="12" :lg="4">
-        <el-select
-          v-model="cid_type_payment"
-          v-loading="loadingPayments"
-          placeholder="Chọn tài chính"
-          filterable
-          clearable
-          style="width: 100%"
-        >
-          <el-option
-            v-for="item in payments"
-            :key="item.id"
-            :value="item.id"
-            :label="item.code"
+      <el-row :gutter="10" style="margin-top: 16px">
+        <el-col :xs="12" :lg="4">
+          <el-input v-model="name" placeholder="Nhập tên user" />
+        </el-col>
+        <el-col :xs="12" :lg="4">
+          <el-input v-model="phone" placeholder="Số điện thoại" />
+        </el-col>
+        <el-col :xs="12" :lg="4">
+          <el-input v-model="id_payment" placeholder="Id đối tác" />
+        </el-col>
+        <el-col :xs="12" :lg="4">
+          <el-input
+            v-model="id_app"
+            placeholder="Id-app"
+            @input="(v) => (id_app = (v || '').toLowerCase())"
           />
-        </el-select>
-      </el-col>
-    </el-row>
+        </el-col>
+        <el-col :xs="12" :lg="4">
+          <el-input v-model="shd" placeholder="Shd" />
+        </el-col>
+        <el-col :xs="12" :lg="4">
+          <el-select
+            v-model="cid_type_payment"
+            v-loading="loadingPayments"
+            placeholder="Chọn tài chính"
+            filterable
+            clearable
+            style="width: 100%"
+          >
+            <el-option
+              v-for="item in payments"
+              :key="item.id"
+              :value="item.id"
+              :label="item.code"
+            />
+          </el-select>
+        </el-col>
+      </el-row>
 
-    <el-row :gutter="10" style="margin-top: 10px">
-      <el-col :xs="12" :lg="4">
-        <el-select
-          v-model="approved"
-          placeholder="Tình trạng"
-          clearable
-          style="width: 100%"
-        >
-          <el-option :value="0" label="Chờ xử lý" />
-          <el-option :value="1" label="Hồ sơ đang xử lý" />
-          <el-option :value="2" label="Hồ sơ bị hủy/từ chối" />
-          <el-option :value="3" label="Hồ sơ đã ký" />
-          <el-option :value="4" label="Hồ sơ đã hoàn thành" />
-        </el-select>
-      </el-col>
-      <el-col :xs="12" :lg="4">
-        <el-date-picker
-          v-model="date_cre"
-          type="date"
-          placeholder="Ngày bắt đầu"
-        />
-      </el-col>
-      <el-col :xs="12" :lg="4">
-        <el-date-picker
-          v-model="date_end"
-          type="date"
-          placeholder="Ngày kết thúc"
-        />
-      </el-col>
-      <el-col :xs="12" :lg="4">
-        <el-select
-          v-model="cid_store"
-          v-loading="loadingStores"
-          placeholder="Chọn chi nhánh"
-          filterable
-          clearable
-          :filter-method="filterSite"
-          style="width: 100%"
-          @visible-change="handleSiteVisible"
-        >
-          <el-option
-            v-for="item in filteredSites"
-            :key="item.sapCode"
-            :value="item.sapCode"
-            :label="`${item.sapCode} - ${item.name}`"
+      <el-row :gutter="10" style="margin-top: 10px">
+        <el-col :xs="12" :lg="4">
+          <el-select
+            v-model="approved"
+            placeholder="Tình trạng"
+            clearable
+            style="width: 100%"
+          >
+            <el-option :value="0" label="Chờ xử lý" />
+            <el-option :value="1" label="Hồ sơ đang xử lý" />
+            <el-option :value="2" label="Hồ sơ bị hủy/từ chối" />
+            <el-option :value="3" label="Hồ sơ đã ký" />
+            <el-option :value="4" label="Hồ sơ đã hoàn thành" />
+          </el-select>
+        </el-col>
+        <el-col :xs="12" :lg="4">
+          <el-date-picker
+            v-model="date_cre"
+            type="date"
+            placeholder="Ngày bắt đầu"
           />
-        </el-select>
-      </el-col>
-      <el-col :xs="12" :lg="4">
-        <el-button
-          type="primary"
-          icon="el-icon-search"
-          :loading="loading"
-          :disabled="loading"
-          @click="handleSearch"
-        >
-          Tìm kiếm
-        </el-button>
-      </el-col>
-    </el-row>
-
-    <el-table :data="news.data" style="width: 100%; margin-top: 30px" border>
-      <el-table-column label="ID app">
-        <template slot-scope="scope">
-          {{ scope.row.id_app }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Tên">
-        <template slot-scope="scope">
-          {{ scope.row.name }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Số điện thoại">
-        <template slot-scope="scope">
-          {{ scope.row.phone }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Nhà tài chính">
-        <template slot-scope="scope">
-          <span v-if="payments.find((a) => a.id == scope.row.cid_type_payment)">
-            {{ payments.find((a) => a.id == scope.row.cid_type_payment).code }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Chi nhánh">
-        <template slot-scope="scope">
-          <span v-if="sites.find((a) => a.sapCode == scope.row.cid_store)">
-            {{ scope.row.cid_store }} -
-            {{ sites.find((a) => a.sapCode == scope.row.cid_store).name }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Số hợp đồng">
-        <template slot-scope="scope">
-          {{ scope.row.sohopdong }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Ngày lên hồ sơ">
-        <template slot-scope="scope">
-          {{ scope.row.date_cre && scope.row.date_cre.date }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Tổng tiền">
-        <template slot-scope="scope">
-          {{
-            String(scope.row.total_price)
-              .toString()
-              .replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.")
-          }}Đ
-        </template>
-      </el-table-column>
-      <el-table-column label="Tình trạng">
-        <template slot-scope="scope">
-          <span
-            v-if="scope.row.approved == 0"
-            style="color: #03a9f4"
-          >Chờ xử lý</span>
-          <span
-            v-if="scope.row.approved == 1"
-            style="color: blue"
-          >Hồ sơ đang xử lý</span>
-          <span
-            v-if="scope.row.approved == 2"
-            style="color: green"
-          >Hồ sơ bị hủy/từ chối
-          </span>
-          <span
-            v-if="scope.row.approved == 3"
-            style="color: #795548"
-          >Hồ sơ đã ký</span>
-          <span
-            v-if="scope.row.approved == 4"
-            style="color: red"
-          >Hồ sơ đã hoàn thành</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Tình trạng đối tác">
-        <template slot-scope="scope">
-          <span
-            v-if="
-              scope.row.flag_index &&
-                scope.row.flag_index.is_send_api == 0
-            "
-            style="color: red"
-          >Chưa gửi thành công</span>
-          <span
-            v-else-if="
-              scope.row.flag_index &&
-                scope.row.flag_index.is_send_api == 1
-            "
-            style="color: rgb(3, 169, 244)"
-          >Gửi thành công</span>
-          <span v-else>-</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Tùy chọn" width="220">
-        <template slot-scope="scope">
+        </el-col>
+        <el-col :xs="12" :lg="4">
+          <el-date-picker
+            v-model="date_end"
+            type="date"
+            placeholder="Ngày kết thúc"
+          />
+        </el-col>
+        <el-col :xs="12" :lg="4">
+          <el-select
+            v-model="cid_store"
+            v-loading="loadingStores"
+            placeholder="Chọn chi nhánh"
+            filterable
+            clearable
+            :filter-method="filterSite"
+            style="width: 100%"
+            @visible-change="handleSiteVisible"
+          >
+            <el-option
+              v-for="item in filteredSites"
+              :key="item.sapCode"
+              :value="item.sapCode"
+              :label="`${item.sapCode} - ${item.name}`"
+            />
+          </el-select>
+        </el-col>
+        <el-col :xs="12" :lg="4">
           <el-button
             type="primary"
-            size="small"
-            icon="el-icon-edit-outline"
-            @click="handleEdit(scope.row)"
-          >Sửa</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+            icon="el-icon-search"
+            :loading="loading"
+            :disabled="loading"
+            @click="handleSearch"
+          >
+            Tìm kiếm
+          </el-button>
+        </el-col>
+      </el-row>
+    </div>
+
+    <div class="table-card">
+      <el-table :data="news.data" style="width: 100%" border>
+        <el-table-column label="ID app" min-width="290" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row.id_app }}
+          </template>
+        </el-table-column>
+        <el-table-column label="Tên" min-width="150" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row.name }}
+          </template>
+        </el-table-column>
+        <el-table-column label="Số điện thoại" min-width="120" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row.phone }}
+          </template>
+        </el-table-column>
+        <el-table-column label="Nhà tài chính" min-width="110" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span v-if="payments.find((a) => a.id == scope.row.cid_type_payment)">
+              {{ payments.find((a) => a.id == scope.row.cid_type_payment).code }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="Chi nhánh" min-width="210" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span v-if="sites.find((a) => a.sapCode == scope.row.cid_store)">
+              {{ scope.row.cid_store }} -
+              {{ sites.find((a) => a.sapCode == scope.row.cid_store).name }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="Số hợp đồng" min-width="120" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row.sohopdong }}
+          </template>
+        </el-table-column>
+        <el-table-column label="Ngày lên hồ sơ" min-width="160" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row.date_cre && String(scope.row.date_cre.date || "").slice(0, 19) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="Tổng tiền" min-width="120" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{
+              String(scope.row.total_price)
+                .toString()
+                .replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.")
+            }}Đ
+          </template>
+        </el-table-column>
+        <el-table-column label="Tình trạng" min-width="170" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span
+              v-if="scope.row.approved == 0"
+              style="color: #03a9f4"
+            >Chờ xử lý</span>
+            <span
+              v-if="scope.row.approved == 1"
+              style="color: blue"
+            >Hồ sơ đang xử lý</span>
+            <span
+              v-if="scope.row.approved == 2"
+              style="color: green"
+            >Hồ sơ bị hủy/từ chối
+            </span>
+            <span
+              v-if="scope.row.approved == 3"
+              style="color: #795548"
+            >Hồ sơ đã ký</span>
+            <span
+              v-if="scope.row.approved == 4"
+              style="color: red"
+            >Hồ sơ đã hoàn thành</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="Tình trạng đối tác" min-width="160" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span
+              v-if="
+                scope.row.flag_index &&
+                  scope.row.flag_index.is_send_api == 0
+              "
+              style="color: red"
+            >Chưa gửi thành công</span>
+            <span
+              v-else-if="
+                scope.row.flag_index &&
+                  scope.row.flag_index.is_send_api == 1
+              "
+              style="color: rgb(3, 169, 244)"
+            >Gửi thành công</span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="Tùy chọn" width="100" fixed="right">
+          <template slot-scope="scope">
+            <el-button
+              type="primary"
+              size="small"
+              icon="el-icon-edit-outline"
+              @click="handleEdit(scope.row)"
+            >Sửa</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <!-- Pagination -->
+      <el-pagination
+        :page-size="10"
+        layout="total, prev, pager, next"
+        :total="news.TotalItem"
+        :current-page.sync="page"
+        @current-change="handleCurrentChange"
+      />
+    </div>
 
     <!-- Popup -->
     <el-dialog
       v-if="dialogVisible"
       :visible.sync="dialogVisible"
       :title="statusPopup"
+      custom-class="dialog-has-actions"
     >
       <Add
         :payments="payments"
@@ -230,6 +244,7 @@
       v-if="dialogVisible_edit"
       :visible.sync="dialogVisible_edit"
       :title="statusPopup"
+      custom-class="dialog-has-actions"
     >
       <Edit
         :payments="payments"
@@ -239,15 +254,6 @@
         @statusDialog="statusDialog"
       />
     </el-dialog>
-
-    <!-- Pagination -->
-    <el-pagination
-      :page-size="10"
-      layout="total, prev, pager, next"
-      :total="news.TotalItem"
-      :current-page.sync="page"
-      @current-change="handleCurrentChange"
-    />
   </div>
 </template>
 

@@ -1,104 +1,102 @@
 <template>
   <div class="app-container">
-    <el-row :gutter="10">
-      <el-col :xs="12" :lg="4">
-        <el-input v-model="id_payment" placeholder="Id đối tác" clearable />
-      </el-col>
-      <el-col :xs="12" :lg="4">
-        <el-input v-model="id_app" placeholder="Id app" clearable />
-      </el-col>
-      <el-col :xs="12" :lg="4">
-        <el-input v-model="id_order" placeholder="Id đơn hàng" clearable />
-      </el-col>
-      <el-col :xs="12" :lg="4">
-        <el-select
-          v-model="error"
-          placeholder="Tình trạng"
-          clearable
-          style="width: 100%"
-        >
-          <el-option label="Thành công" :value="0" />
-          <el-option label="Lỗi đối tác" :value="1" />
-          <el-option label="Lỗi serve" :value="2" />
-        </el-select>
-      </el-col>
-      <el-col :xs="12" :lg="4">
-        <el-button type="primary" icon="el-icon-search" @click="handleSearch">
-          Tìm kiếm
-        </el-button>
-      </el-col>
-    </el-row>
-
-    <el-table
-      v-loading="is_loading"
-      :data="rows"
-      style="width: 100%; margin-top: 20px"
-      border
-    >
-      <el-table-column label="Id" prop="_id" width="240">
-        <template slot-scope="scope">
-          {{ scope.row._id || scope.row.id }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Content">
-        <template slot-scope="scope">
-          <span class="content-cell">{{ formatContent(scope.row) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Error" width="140">
-        <template slot-scope="scope">
-          {{ scope.row.error }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Http code" width="120">
-        <template slot-scope="scope">
-          {{
-            scope.row.http_code || scope.row.httpCode || scope.row.status_code
-          }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Tùy chọn" width="120">
-        <template slot-scope="scope">
-          <el-button
-            type="primary"
-            size="small"
-            @click="handleDetail(scope.row)"
+    <div class="filter-card">
+      <el-row :gutter="10">
+        <el-col :xs="12" :lg="4">
+          <el-input v-model="id_payment" placeholder="Id đối tác" clearable />
+        </el-col>
+        <el-col :xs="12" :lg="4">
+          <el-input v-model="id_app" placeholder="Id app" clearable />
+        </el-col>
+        <el-col :xs="12" :lg="4">
+          <el-input v-model="id_order" placeholder="Id đơn hàng" clearable />
+        </el-col>
+        <el-col :xs="12" :lg="4">
+          <el-select
+            v-model="error"
+            placeholder="Tình trạng"
+            clearable
+            style="width: 100%"
           >
-            Chi tiết
+            <el-option label="Thành công" :value="0" />
+            <el-option label="Lỗi đối tác" :value="1" />
+            <el-option label="Lỗi serve" :value="2" />
+          </el-select>
+        </el-col>
+        <el-col :xs="12" :lg="4">
+          <el-button type="primary" icon="el-icon-search" @click="handleSearch">
+            Tìm kiếm
           </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+        </el-col>
+      </el-row>
+    </div>
 
-    <el-pagination
-      style="margin-top: 20px"
-      :page-size="10"
-      layout="total, prev, pager, next"
-      :total="logs.TotalItem || logs.totalItem || logs.Totalpage || 0"
-      :current-page.sync="page"
-      @current-change="handleCurrentChange"
-    />
+    <div class="table-card">
+      <el-table
+        v-loading="is_loading"
+        :data="rows"
+        style="width: 100%"
+        border
+      >
+        <el-table-column label="Id" prop="_id" width="240" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row._id || scope.row.id }}
+          </template>
+        </el-table-column>
+        <el-table-column label="Content" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ formatContent(scope.row) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="Error" width="140" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row.error }}
+          </template>
+        </el-table-column>
+        <el-table-column label="Http code" width="120" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{
+              scope.row.http_code || scope.row.httpCode || scope.row.status_code
+            }}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="Tùy chọn" width="120">
+          <template slot-scope="scope">
+            <el-button
+              type="primary"
+              size="small"
+              @click="handleDetail(scope.row)"
+            >
+              Chi tiết
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
-    <el-dialog
+      <el-pagination
+        :page-size="10"
+        layout="total, prev, pager, next"
+        :total="logs.TotalItem || logs.totalItem || logs.Totalpage || 0"
+        :current-page.sync="page"
+        @current-change="handleCurrentChange"
+      />
+    </div>
+
+    <LogDetailDialog
       v-if="dialogVisible"
       :visible.sync="dialogVisible"
-      title="Chi tiết"
-      width="60%"
-    >
-      <div class="detail-grid">
-        <div v-for="f in detailFields" :key="f.key" class="detail-item">
-          <span class="detail-label">{{ f.label }}:</span>
-          <span class="detail-value">{{ formatValue(detail[f.key]) }}</span>
-        </div>
-      </div>
-    </el-dialog>
+      :detail="detail"
+      :fields="detailFields"
+    />
   </div>
 </template>
 
 <script>
 import { getUser } from '@/utils/auth'
+import LogDetailDialog from '@/components/LogDetailDialog'
 
 export default {
+  components: { LogDetailDialog },
   data() {
     return {
       id_payment: '',
@@ -200,52 +198,7 @@ export default {
       } catch (e) {
         return String(c)
       }
-    },
-    formatValue(v) {
-      if (v == null) return ''
-      if (
-        typeof v === 'string' ||
-        typeof v === 'number' ||
-        typeof v === 'boolean'
-      ) {
-        return v
-      }
-      try {
-        return JSON.stringify(v)
-      } catch (e) {
-        return String(v)
-      }
     }
   }
 }
 </script>
-
-<style scoped>
-.content-cell {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  word-break: break-all;
-}
-.detail-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px 32px;
-  max-height: 60vh;
-  overflow: auto;
-}
-.detail-item {
-  font-size: 14px;
-  line-height: 1.5;
-  word-break: break-all;
-}
-.detail-label {
-  font-weight: 600;
-  color: #303133;
-  margin-right: 6px;
-}
-.detail-value {
-  color: #606266;
-}
-</style>

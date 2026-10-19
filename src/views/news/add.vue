@@ -385,8 +385,8 @@
       </el-container>
     </el-form>
 
-    <div style="text-align: right">
-      <div style="display: flex; justify-content: space-between">
+    <div class="dialog-actions">
+      <div>
         <el-button
           type="success"
           icon="el-icon-check"

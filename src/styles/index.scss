@@ -33,70 +33,6 @@ label {
   font-weight: 700;
 }
 
-.login {
-  &-container {
-    display: flex;
-    flex-wrap: wrap;
-    flex-wrap: wrap;
-    max-width: 1320px;
-    margin: 0 auto;
-    height: 100%;
-    align-items: center;
-  }
-
-
-
-  &-image {
-    width: 50%;
-    max-width: 550px;
-    margin: 0 auto;
-
-    @media screen and (max-width:767px) {
-      width: 100%;
-    }
-
-    img {
-      width: 100%;
-    }
-  }
-
-  &-form {
-    width: 50%;
-    max-width: 400px;
-    text-align: center;
-    margin: 0 auto;
-
-    @media screen and (max-width:767px) {
-      width: 100%;
-    }
-
-    .el-button {
-      width: 100%;
-    }
-
-    .el-form-item__content {
-      position: relative;
-
-      .svg-container {
-        position: absolute;
-        left: 10px;
-        z-index: 1;
-      }
-
-      .show-pwd {
-        position: absolute;
-        z-index: 1;
-        right: 10px;
-        cursor: pointer;
-      }
-
-      input {
-        padding-left: 30px;
-      }
-    }
-  }
-}
-
 html {
   height: 100%;
   box-sizing: border-box;
@@ -206,6 +142,24 @@ aside {
   padding: 20px;
 }
 
+// Thẻ trắng trên nền xám (theo Ticket2026): khối tìm kiếm + khối bảng
+.filter-card,
+.table-card {
+  background: #fff;
+  border: 1px solid #ebeef5;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  padding: 20px;
+}
+
+.filter-card {
+  margin-bottom: 16px;
+}
+
+.table-card .el-pagination {
+  margin-top: 16px;
+}
+
 .components-container {
   margin: 30px 50px;
   position: relative;
@@ -272,38 +226,6 @@ aside {
   z-index: 1000 !important;
 }
 
-.navbar {
-  padding: 10px 20px;
-  overflow: hidden;
-  position: relative;
-  background: #fff;
-  -webkit-box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  .el-breadcrumb {
-    margin-left: 12px;
-  }
-
-  i {
-    font-size: 22px;
-  }
-
-
-  .left-menu {
-    display: flex;
-    align-items: center;
-  }
-
-  .right-menu {
-    float: right;
-  }
-
-
-}
-
 .el-dropdown-menu {
   .logout {
     border-top: 1px solid #e6ebf5;
@@ -317,41 +239,142 @@ aside {
 }
 
 .tabview {
-  padding: 15px 10px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 0 3px 0 rgba(0, 0, 0, 0.04);
+  padding: 10px 16px 0;
+  background: #fff;
+  overflow-x: auto;
+  overflow-y: hidden;
+  cursor: grab; // gợi ý có thể kéo qua lại
+  user-select: none; // không bôi đen chữ khi kéo
 
+  // Khi đang kéo bằng chuột
+  &.is-dragging {
+    cursor: grabbing;
+
+    .el-tag {
+      cursor: grabbing;
+    }
+  }
+
+  > div,
   .flex {
-    height: 37px;
-  }
-
-  @media screen and (max-width:767px) {
-    overflow: scroll;
-  }
-
-  >div {
+    display: flex;
+    align-items: center;
+    gap: 2px;
     white-space: nowrap;
   }
-
 }
 
+/* Tab kiểu trình duyệt (Chrome/Google): phẳng, có gạch phân cách,
+   tab đang chọn nền xanh nhạt bo góc. */
 .tabview .el-tag {
-  margin-right: 8px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  line-height: normal;
+  padding: 0 12px 0 18px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: #5f6368;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
-  font-size: 14px;
-  padding: 4px 10px;
-  height: 36px;
-  font-weight: bold;
+  transition: color 0.15s ease, background-color 0.15s ease;
 
+  // Gạch phân cách dọc giữa các tab
+  &::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 18px;
+    background: #dadce0;
+    transition: opacity 0.15s ease;
+  }
+  &:first-child::before {
+    opacity: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  &:hover {
+    background: #f1f3f4;
+    color: #202124;
+
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
+
+    &::before {
+      opacity: 0;
+    }
+  }
+  // Ẩn gạch của tab đứng ngay sau tab đang hover
+  &:hover + .el-tag::before {
+    opacity: 0;
+  }
+
+  .el-tag__close {
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    margin-left: 1px;
+    color: #80868b;
+    border-radius: 50%;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    &::before {
+      font-size: 14px;
+    }
+    &:hover {
+      color: #d93025;
+      background-color: rgba(0, 0, 0, 0.08);
+    }
+  }
+
+  // Tab đang mở — nền xanh nhạt, viền xanh bo góc
   &.active {
-    background-color: #409eff;
-    color: #fff;
+    background: #e8f0fe;
+    color: #1a73e8;
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
 
-    i {
-      &::before {
-        color: #fff !important;
+    a {
+      color: #1a73e8;
+    }
+    &::before {
+      opacity: 0;
+    }
+    .el-tag__close {
+      color: #1a73e8;
+      &:hover {
+        color: #1a73e8;
+        background-color: rgba(26, 115, 232, 0.16);
       }
     }
   }
+  // Ẩn gạch của tab đứng ngay sau tab đang mở
+  &.active + .el-tag::before {
+    opacity: 0;
+  }
+}
+
+/* Ẩn thanh scroll ngang của tabview — trượt bằng cách kéo chuột */
+.tabview {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge cũ */
+}
+.tabview::-webkit-scrollbar {
+  height: 0;
+  width: 0;
+  display: none;
 }
 
 .pagination {
@@ -478,6 +501,21 @@ aside {
   -webkit-box-orient: vertical;
   overflow: hidden;
   max-height: 115px;
+}
+
+// Cột có show-overflow-tooltip: 1 dòng, dư thì "...", hover hiện tooltip
+.el-table .cell.el-tooltip {
+  display: block;
+  max-height: none;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+// Tooltip nội dung dài (vd JSON) không tràn hết màn hình
+.el-tooltip__popper {
+  max-width: 600px;
+  line-height: 1.5;
+  word-break: break-word;
 }
 
 .box input,

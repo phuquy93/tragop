@@ -1,103 +1,118 @@
 <template>
   <div class="app-container">
-    <el-button
-      type="primary"
-      icon="el-icon-plus"
-      @click="handleAddRole(true)"
-    >Thêm user</el-button>
-    <el-row style="margin-top: 30px">
-      <el-col :xs="12" :lg="4">
-        <el-input v-model="name" placeholder="Nhập tên" />
-      </el-col>
-      <el-col :xs="12" :lg="4">
-        <el-select v-model="status" placeholder="Tùy chọn" clearable>
-          <el-option
-            v-for="item in [
-              {
-                value: '0',
-                label: 'Ẩn',
-              },
-              {
-                value: '1',
-                label: 'Hiện',
-              },
-            ]"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-      </el-col>
-      <el-col :xs="12" :lg="4">
-        <el-select
-          v-model="cid_store"
-          placeholder="Tùy chọn chi nhánh"
-          clearable
-          filterable
-          style="width: 100%"
-          :loading="loadingSites"
-          @visible-change="handleSiteVisible"
-        >
-          <el-option
-            v-for="item in sites"
-            :key="item.sapCode || item.id"
-            :label="item.name + ' - ' + item.sapCode"
-            :value="item.sapCode || item.id"
-          />
-        </el-select>
-      </el-col>
-      <el-col :xs="24" :lg="4">
-        <el-button
-          type="primary"
-          icon="el-icon-search"
-          style="width: 100%"
-          @click="handleSearch"
-        >
-          Tìm kiếm
-        </el-button>
-      </el-col>
-    </el-row>
-
-    <el-table
-      :data="listUsers.data"
-      style="width: 100%; margin-top: 30px"
-      border
-    >
-      <el-table-column label="Tên">
-        <template slot-scope="scope">
-          {{ scope.row.name }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Loại user">
-        <template slot-scope="scope">
-          <span v-if="scope.row.rule == 1">Admin</span>
-          <span v-else-if="scope.row.rule == 2">Quản lý chi nhánh</span>
-          <span v-else-if="scope.row.rule == 3">Tài chính</span>
-          <span v-else-if="scope.row.rule == 4">Quản lý user tài chính</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Trạng thái">
-        <template slot-scope="scope">
-          <span v-if="scope.row.status == 1">Hiện</span>
-          <span v-else>Ẩn</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Tùy chọn" width="220">
-        <template slot-scope="scope">
+    <div class="filter-card">
+      <el-button
+        type="primary"
+        icon="el-icon-plus"
+        @click="handleAddRole(true)"
+      >Thêm user</el-button>
+      <el-row style="margin-top: 16px">
+        <el-col :xs="12" :lg="4">
+          <el-input v-model="name" placeholder="Nhập tên" />
+        </el-col>
+        <el-col :xs="12" :lg="4">
+          <el-select v-model="status" placeholder="Tùy chọn" clearable>
+            <el-option
+              v-for="item in [
+                {
+                  value: '0',
+                  label: 'Ẩn',
+                },
+                {
+                  value: '1',
+                  label: 'Hiện',
+                },
+              ]"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-col>
+        <el-col :xs="12" :lg="4">
+          <el-select
+            v-model="cid_store"
+            placeholder="Tùy chọn chi nhánh"
+            clearable
+            filterable
+            style="width: 100%"
+            :loading="loadingSites"
+            @visible-change="handleSiteVisible"
+          >
+            <el-option
+              v-for="item in sites"
+              :key="item.sapCode || item.id"
+              :label="item.name + ' - ' + item.sapCode"
+              :value="item.sapCode || item.id"
+            />
+          </el-select>
+        </el-col>
+        <el-col :xs="24" :lg="4">
           <el-button
             type="primary"
-            size="small"
-            icon="el-icon-edit-outline"
-            @click="handleEdit(scope.row)"
-          >Sửa</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+            icon="el-icon-search"
+            style="width: 100%"
+            @click="handleSearch"
+          >
+            Tìm kiếm
+          </el-button>
+        </el-col>
+      </el-row>
+    </div>
+
+    <div class="table-card">
+      <el-table
+        :data="listUsers.data"
+        style="width: 100%"
+        border
+      >
+        <el-table-column label="Tên" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row.name }}
+          </template>
+        </el-table-column>
+        <el-table-column label="Loại user" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span v-if="scope.row.rule == 1">Admin</span>
+            <span v-else-if="scope.row.rule == 2">Quản lý chi nhánh</span>
+            <span v-else-if="scope.row.rule == 3">Tài chính</span>
+            <span v-else-if="scope.row.rule == 4">Quản lý user tài chính</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="Trạng thái" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span v-if="scope.row.status == 1">Hiện</span>
+            <span v-else>Ẩn</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="Tùy chọn" width="220">
+          <template slot-scope="scope">
+            <el-button
+              type="primary"
+              size="small"
+              icon="el-icon-edit-outline"
+              @click="handleEdit(scope.row)"
+            >Sửa</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <!-- Pagination -->
+      <el-pagination
+        :page-size="10"
+        layout="total, prev, pager, next"
+        :total="listUsers.TotalItem"
+        :current-page.sync="page"
+        @current-change="handleCurrentChange"
+      />
+    </div>
+
     <!-- Popup -->
     <el-dialog
       v-if="dialogVisible"
       :visible.sync="dialogVisible"
       :title="statusPopup"
+      custom-class="dialog-has-actions"
     >
       <Popup
         :status-popup="statusPopup"
@@ -105,15 +120,6 @@
         @statusDialog="statusDialog"
       />
     </el-dialog>
-
-    <!-- Pagination -->
-    <el-pagination
-      :page-size="10"
-      layout="total, prev, pager, next"
-      :total="listUsers.TotalItem"
-      :current-page.sync="page"
-      @current-change="handleCurrentChange"
-    />
   </div>
 </template>
 

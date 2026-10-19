@@ -1,92 +1,94 @@
 <template>
   <div class="app-container">
-    <el-row :gutter="10">
-      <el-col :xs="24" :sm="12" :md="4">
-        <el-select
-          v-model="financier"
-          placeholder="Chọn tài chính"
-          clearable
-          filterable
-          :loading="loadingFinanciers"
-          style="width: 100%"
-          @visible-change="handleFinancierVisible"
-        >
-          <el-option
-            v-for="item in financiers"
-            :key="item.id"
-            :label="item.shortName"
-            :value="item.id"
+    <div class="filter-card">
+      <el-row :gutter="10">
+        <el-col :xs="24" :sm="12" :md="4">
+          <el-select
+            v-model="financier"
+            placeholder="Chọn tài chính"
+            clearable
+            filterable
+            :loading="loadingFinanciers"
+            style="width: 100%"
+            @visible-change="handleFinancierVisible"
+          >
+            <el-option
+              v-for="item in financiers"
+              :key="item.id"
+              :label="item.shortName"
+              :value="item.id"
+            />
+          </el-select>
+        </el-col>
+
+        <el-col :xs="24" :sm="12" :md="4">
+          <el-date-picker
+            v-model="dateStart"
+            type="date"
+            placeholder="Ngày bắt đầu"
+            value-format="yyyy-MM-dd"
+            style="width: 100%"
           />
-        </el-select>
-      </el-col>
+        </el-col>
 
-      <el-col :xs="24" :sm="12" :md="4">
-        <el-date-picker
-          v-model="dateStart"
-          type="date"
-          placeholder="Ngày bắt đầu"
-          value-format="yyyy-MM-dd"
-          style="width: 100%"
-        />
-      </el-col>
-
-      <el-col :xs="24" :sm="12" :md="4">
-        <el-date-picker
-          v-model="dateEnd"
-          type="date"
-          placeholder="Ngày kết thúc"
-          value-format="yyyy-MM-dd"
-          style="width: 100%"
-        />
-      </el-col>
-
-      <el-col :xs="24" :sm="12" :md="4">
-        <el-select
-          v-model="status"
-          placeholder="Tình trạng"
-          clearable
-          style="width: 100%"
-        >
-          <el-option
-            v-for="item in statusOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+        <el-col :xs="24" :sm="12" :md="4">
+          <el-date-picker
+            v-model="dateEnd"
+            type="date"
+            placeholder="Ngày kết thúc"
+            value-format="yyyy-MM-dd"
+            style="width: 100%"
           />
-        </el-select>
-      </el-col>
+        </el-col>
 
-      <el-col :xs="24" :sm="12" :md="4">
-        <el-select
-          v-model="site"
-          placeholder="Chọn chi nhánh"
-          clearable
-          filterable
-          :loading="loadingSites"
-          style="width: 100%"
-          @visible-change="handleSiteVisible"
-        >
-          <el-option
-            v-for="item in sites"
-            :key="item.sapCode || item.id"
-            :label="item.name + ' - ' + item.sapCode"
-            :value="item.sapCode || item.id"
-          />
-        </el-select>
-      </el-col>
+        <el-col :xs="24" :sm="12" :md="4">
+          <el-select
+            v-model="status"
+            placeholder="Tình trạng"
+            clearable
+            style="width: 100%"
+          >
+            <el-option
+              v-for="item in statusOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-col>
 
-      <el-col :xs="24" :sm="12" :md="4">
-        <el-button
-          type="primary"
-          icon="el-icon-download"
-          :loading="exporting"
-          style="width: 100%"
-          @click="handleExport"
-        >
-          Export
-        </el-button>
-      </el-col>
-    </el-row>
+        <el-col :xs="24" :sm="12" :md="4">
+          <el-select
+            v-model="site"
+            placeholder="Chọn chi nhánh"
+            clearable
+            filterable
+            :loading="loadingSites"
+            style="width: 100%"
+            @visible-change="handleSiteVisible"
+          >
+            <el-option
+              v-for="item in sites"
+              :key="item.sapCode || item.id"
+              :label="item.name + ' - ' + item.sapCode"
+              :value="item.sapCode || item.id"
+            />
+          </el-select>
+        </el-col>
+
+        <el-col :xs="24" :sm="12" :md="4">
+          <el-button
+            type="primary"
+            icon="el-icon-download"
+            :loading="exporting"
+            style="width: 100%"
+            @click="handleExport"
+          >
+            Export
+          </el-button>
+        </el-col>
+      </el-row>
+    </div>
   </div>
 </template>
 

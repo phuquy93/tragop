@@ -102,14 +102,12 @@ const ROLE_LABELS = {
   5: 'Nhân viên bán hàng'
 }
 
-const GROUP_STORAGE_KEY = 'Tragop-Sidebar-Groups'
-
-function readGroupState() {
-  try {
-    return JSON.parse(window.sessionStorage.getItem(GROUP_STORAGE_KEY)) || {}
-  } catch (e) {
-    return {}
-  }
+// Nhóm chứa trang đang mở thì mở, các nhóm khác đóng
+function groupStateFor(path) {
+  return MENU_GROUPS.reduce((state, g) => {
+    state[g.key] = g.paths.includes(path)
+    return state
+  }, {})
 }
 
 export default {
@@ -122,8 +120,17 @@ export default {
     return {
       logo,
       isLogout: false,
-      // key nhóm -> người dùng đã mở/đóng (chưa có = mở)
-      groupState: readGroupState()
+      // key nhóm -> đang mở/đóng
+      groupState: groupStateFor(this.$route.path)
+    }
+  },
+  watch: {
+    // Chuyển sang trang thuộc nhóm đang đóng thì mở nhóm đó
+    '$route.path'(path) {
+      const group = MENU_GROUPS.find((g) => g.paths.includes(path))
+      if (group && !this.groupState[group.key]) {
+        this.groupState = { ...this.groupState, [group.key]: true }
+      }
     }
   },
   computed: {
@@ -163,18 +170,10 @@ export default {
       return entry ? entry.slice(key.length + 1) : ''
     },
     isOpen(group) {
-      return group.key in this.groupState ? this.groupState[group.key] : true
+      return !!this.groupState[group.key]
     },
     toggleGroup(group) {
       this.groupState = { ...this.groupState, [group.key]: !this.isOpen(group) }
-      try {
-        window.sessionStorage.setItem(
-          GROUP_STORAGE_KEY,
-          JSON.stringify(this.groupState)
-        )
-      } catch (e) {
-        // bỏ qua khi trình duyệt chặn storage
-      }
     },
     logout() {
       if (this.isLogout) return

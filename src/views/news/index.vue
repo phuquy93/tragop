@@ -96,7 +96,11 @@
           </el-select>
         </el-col>
         <el-col :xs="12" :lg="4">
-          <el-input v-model="orderCode" placeholder="Mã đơn hàng (orderCode)" />
+          <el-input
+            v-model="orderCode"
+            placeholder="Mã đơn hàng (orderCode)"
+            @input="(v) => (orderCode = (v || '').toLowerCase())"
+          />
         </el-col>
         <el-col :xs="12" :lg="4">
           <el-button
@@ -371,7 +375,7 @@ export default {
         id_payment: this.id_payment,
         id_app: (this.id_app || '').trim().toLowerCase(),
         shd: this.shd,
-        orderCode: (this.orderCode || '').trim(),
+        orderCode: (this.orderCode || '').trim().toLowerCase(),
         cid_type_payment: this.cid_type_payment,
         cid_store: this.cid_store,
         approved: this.approved,
